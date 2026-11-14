@@ -88,7 +88,6 @@
     qtyCustom: $('qty-custom'),
     qtyError: $('qty-error'),
     qtyClose: $('qty-close'),
-    downloadCsv: $('download-csv'),
     downloadMd: $('download-md'),
     copyDigest: $('copy-digest'),
     lastArchive: $('last-archive'),
@@ -357,7 +356,6 @@
       els.lastArchive.textContent = '当日暂无记录';
     }
 
-    els.downloadCsv.href = `/api/daily/${state.date}.csv`;
     els.downloadMd.href = `/api/daily/${state.date}.md`;
     els.datePicker.value = state.date;
     els.datePicker.max = state.today;

@@ -21,3 +21,10 @@ runtime/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Windows launchers stay on this machine
+启动.bat
+后台启动.bat
+停止服务.bat
+scripts/start_background.ps1
+scripts/stop_background.ps1
