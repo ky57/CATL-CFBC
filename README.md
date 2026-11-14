@@ -1,4 +1,4 @@
-# CATL-CFBC 故障信息收集系统
+# CATL-电子维修 故障信息收集系统
 
 内网故障信息登记 + 每日归档的小型系统。手机、电脑浏览器都能填写；数据存在本机
 SQLite 里，同时每天生成 Markdown / CSV / JSON 归档，日报脚本可以直接读取。
@@ -31,8 +31,8 @@ SQLite 里，同时每天生成 Markdown / CSV / JSON 归档，日报脚本可�
 双击 **`启动.bat`**，窗口里会显示随机端口，例如：
 
 ```
-访问地址: http://127.0.0.1:38271
-访问地址: http://192.168.1.4:38271
+访问地址: http://127.0.0.1:XXXX
+访问地址: http://192.168.1.4:XXXX
 ```
 
 浏览器打开第一个地址即可。手机与电脑在同一局域网时，打开第二个地址
@@ -54,7 +54,7 @@ SQLite 里，同时每天生成 Markdown / CSV / JSON 归档，日报脚本可�
 
 ### 在 Linux 服务器上常驻运行（192.168.1.8）
 
-共享所在服务器也可以直接常驻运行，访问地址为 **http://192.168.1.8:46995/**。
+共享所在服务器也可以直接常驻运行，访问地址为 **http://192.168.1.8:XXXXX/**。
 Linux 端使用独立的运行目录，避免覆盖 Windows 端的 `runtime/server.json`：
 
 ```bash
@@ -93,21 +93,21 @@ daily/YYYY-MM-DD.csv         当天 CSV（UTF-8 BOM，Excel 可直接打开）
 
 ```powershell
 # 默认输出今天的 Markdown
-python "\\192.168.2.10\sw-file\CATL\CATL-CFBC-InfoDB\scripts\daily_digest.py"
+python "\scripts\daily_digest.py"
 
 # 指定日期
-python "\\192.168.2.10\sw-file\CATL\CATL-CFBC-InfoDB\scripts\daily_digest.py" --date 2026-11-13
+python "\scripts\daily_digest.py" --date 2026-11-13
 
 # 输出 JSON / CSV
-python "\\192.168.2.10\sw-file\CATL\CATL-CFBC-InfoDB\scripts\daily_digest.py" --date 2026-11-13 --format json
-python "\\192.168.2.10\sw-file\CATL\CATL-CFBC-InfoDB\scripts\daily_digest.py" --date 2026-11-13 --format csv
+python "\scripts\daily_digest.py" --date 2026-11-13 --format json
+python "\scripts\daily_digest.py" --date 2026-11-13 --format csv
 
 # 写到指定文件；--write 只重新生成归档文件
-python "\\192.168.2.10\sw-file\CATL\CATL-CFBC-InfoDB\scripts\daily_digest.py" --date 2026-11-13 --out "D:\当日CFBC.md"
-python "\\192.168.2.10\sw-file\CATL\CATL-CFBC-InfoDB\scripts\daily_digest.py" --date 2026-11-13 --write
+python "\scripts\daily_digest.py" --date 2026-11-13 --out "D:\当日CFBC.md"
+python "\scripts\daily_digest.py" --date 2026-11-13 --write
 
 # 查看有记录的日期
-python "\\192.168.2.10\sw-file\CATL\CATL-CFBC-InfoDB\scripts\daily_digest.py" --list
+python "\scripts\daily_digest.py" --list
 ```
 
 Markdown 内容是“当日汇总 + 故障明细”表格，可直接粘到 `每日工作日报` 的
