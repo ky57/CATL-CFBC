@@ -18,9 +18,9 @@ SQLite 里，同时每天生成 Markdown / CSV / JSON 归档，日报脚本可�
 
 ## 界面预览
 
-![电脑端](docs/preview-desktop.png)
+![电脑端](docs/screen-desktop.png)
 
-![手机端](docs/preview-mobile.png)
+![手机端](docs/screen-mobile.png)
 
 （截图使用演示数据，仅用于说明界面。）
 
