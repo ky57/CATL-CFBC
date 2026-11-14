@@ -1,0 +1,226 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1000" width="1400" height="1000" fill="none">
+  <defs>
+    <linearGradient id="board" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#57d6ab" stop-opacity=".05"/>
+      <stop offset="1" stop-color="#6aa8ff" stop-opacity=".04"/>
+    </linearGradient>
+    <pattern id="hatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <path d="M0 0H14" stroke="#57d6ab" stroke-width=".7" stroke-opacity=".18"/>
+    </pattern>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation=".35"/>
+    </filter>
+  </defs>
+
+  <!-- 板框 -->
+  <rect x="38" y="42" width="1324" height="916" rx="42" fill="url(#board)" stroke="#57d6ab" stroke-opacity=".28" stroke-width="2"/>
+  <rect x="58" y="62" width="1284" height="876" rx="30" stroke="#57d6ab" stroke-opacity=".14" stroke-width="1"/>
+  <rect x="96" y="112" width="520" height="620" fill="url(#hatch)" opacity=".5"/>
+
+  <!-- 安装孔 -->
+  <g stroke="#57d6ab" stroke-opacity=".45" stroke-width="2">
+    <circle cx="94" cy="98" r="14"/><circle cx="94" cy="98" r="6"/>
+    <circle cx="1306" cy="98" r="14"/><circle cx="1306" cy="98" r="6"/>
+    <circle cx="94" cy="902" r="14"/><circle cx="94" cy="902" r="6"/>
+    <circle cx="1306" cy="902" r="14"/><circle cx="1306" cy="902" r="6"/>
+  </g>
+
+  <!-- 功率母线：多根平行粗铜箔 -->
+  <g stroke="#57d6ab" stroke-opacity=".38" stroke-linecap="square">
+    <path d="M190 760 H1180 V690 H1270" stroke-width="9"/>
+    <path d="M190 786 H1192 V716 H1270" stroke-width="9"/>
+    <path d="M190 812 H1204 V742 H1270" stroke-width="3"/>
+    <path d="M190 838 H1216 V768 H1270" stroke-width="3"/>
+  </g>
+  <g stroke="#e6bd6f" stroke-opacity=".45" stroke-width="2">
+    <path d="M190 774 H1186 V704 H1270"/>
+    <path d="M190 800 H1198 V730 H1270"/>
+  </g>
+
+  <!-- 四通道功率区 -->
+  <g stroke="#57d6ab" stroke-opacity=".42" stroke-width="2" stroke-linejoin="round">
+    <path d="M186 196 H246 V252 H330"/>
+    <path d="M186 232 H230 V288 H330"/>
+    <path d="M186 268 H214 V324 H330"/>
+    <path d="M186 304 H198 V360 H330"/>
+    <path d="M186 340 H246 V396 H330"/>
+    <path d="M186 376 H262 V432 H330"/>
+    <path d="M186 412 H278 V468 H330"/>
+    <path d="M186 448 H294 V504 H330"/>
+    <path d="M186 484 H310 V540 H330"/>
+    <path d="M186 520 H326"/>
+  </g>
+  <g stroke="#e6bd6f" stroke-opacity=".4" stroke-width="1.5">
+    <path d="M186 214 H238 V270 H330"/>
+    <path d="M186 250 H222 V306 H330"/>
+    <path d="M186 286 H254 V342 H330"/>
+    <path d="M186 322 H270 V378 H330"/>
+    <path d="M186 358 H286 V414 H330"/>
+    <path d="M186 394 H302 V450 H330"/>
+    <path d="M186 430 H318 V486 H330"/>
+    <path d="M186 466 H334"/>
+  </g>
+
+  <!-- 四组半桥 MOS / 驱动 -->
+  <g stroke="#57d6ab" stroke-opacity=".5" stroke-width="2">
+    <rect x="342" y="166" width="84" height="54" rx="7"/>
+    <rect x="342" y="258" width="84" height="54" rx="7"/>
+    <rect x="342" y="350" width="84" height="54" rx="7"/>
+    <rect x="342" y="442" width="84" height="54" rx="7"/>
+    <rect x="470" y="166" width="110" height="54" rx="7"/>
+    <rect x="470" y="258" width="110" height="54" rx="7"/>
+    <rect x="470" y="350" width="110" height="54" rx="7"/>
+    <rect x="470" y="442" width="110" height="54" rx="7"/>
+  </g>
+  <g fill="#e6bd6f" fill-opacity=".38">
+    <rect x="354" y="172" width="14" height="6" rx="2"/><rect x="354" y="208" width="14" height="6" rx="2"/>
+    <rect x="400" y="172" width="14" height="6" rx="2"/><rect x="400" y="208" width="14" height="6" rx="2"/>
+    <rect x="354" y="264" width="14" height="6" rx="2"/><rect x="354" y="300" width="14" height="6" rx="2"/>
+    <rect x="400" y="264" width="14" height="6" rx="2"/><rect x="400" y="300" width="14" height="6" rx="2"/>
+    <rect x="354" y="356" width="14" height="6" rx="2"/><rect x="354" y="392" width="14" height="6" rx="2"/>
+    <rect x="400" y="356" width="14" height="6" rx="2"/><rect x="400" y="392" width="14" height="6" rx="2"/>
+    <rect x="354" y="448" width="14" height="6" rx="2"/><rect x="354" y="484" width="14" height="6" rx="2"/>
+    <rect x="400" y="448" width="14" height="6" rx="2"/><rect x="400" y="484" width="14" height="6" rx="2"/>
+  </g>
+
+  <!-- 主控 MCU -->
+  <g stroke="#6aa8ff" stroke-opacity=".42" stroke-width="2">
+    <rect x="620" y="236" width="286" height="232" rx="12"/>
+    <rect x="638" y="254" width="250" height="196" rx="6" stroke-dasharray="4 5"/>
+  </g>
+  <g fill="#6aa8ff" fill-opacity=".34">
+    <rect x="604" y="262" width="18" height="7" rx="2"/><rect x="604" y="292" width="18" height="7" rx="2"/>
+    <rect x="604" y="322" width="18" height="7" rx="2"/><rect x="604" y="352" width="18" height="7" rx="2"/>
+    <rect x="604" y="382" width="18" height="7" rx="2"/><rect x="604" y="412" width="18" height="7" rx="2"/>
+    <rect x="904" y="262" width="18" height="7" rx="2"/><rect x="904" y="292" width="18" height="7" rx="2"/>
+    <rect x="904" y="322" width="18" height="7" rx="2"/><rect x="904" y="352" width="18" height="7" rx="2"/>
+    <rect x="904" y="382" width="18" height="7" rx="2"/><rect x="904" y="412" width="18" height="7" rx="2"/>
+  </g>
+  <g stroke="#6aa8ff" stroke-opacity=".38" stroke-width="1.8">
+    <path d="M622 280 H512 V220 H514"/>
+    <path d="M622 310 H530 V250 H514"/>
+    <path d="M622 340 H552 V280 H514"/>
+    <path d="M622 370 H574 V310 H514"/>
+    <path d="M622 400 H596 V340 H514"/>
+    <path d="M622 430 H618 V370 H514"/>
+  </g>
+
+  <!-- 采样与保护电路 -->
+  <g stroke="#57d6ab" stroke-opacity=".42" stroke-width="2">
+    <rect x="984" y="184" width="156" height="92" rx="8"/>
+    <rect x="984" y="316" width="156" height="92" rx="8"/>
+    <rect x="984" y="448" width="156" height="92" rx="8"/>
+    <path d="M906 280 H944 V230 H984"/>
+    <path d="M906 320 H956 V362 H984"/>
+    <path d="M906 400 H934 V494 H984"/>
+  </g>
+  <g fill="#e6bd6f" fill-opacity=".45">
+    <circle cx="984" cy="230" r="3"/><circle cx="984" cy="362" r="3"/><circle cx="984" cy="494" r="3"/>
+    <circle cx="1140" cy="230" r="3"/><circle cx="1140" cy="362" r="3"/><circle cx="1140" cy="494" r="3"/>
+  </g>
+
+  <!-- 连接器 -->
+  <g stroke="#57d6ab" stroke-opacity=".45" stroke-width="2">
+    <rect x="1198" y="150" width="48" height="360" rx="6"/>
+    <rect x="1214" y="566" width="34" height="170" rx="5"/>
+  </g>
+  <g fill="#e6bd6f" fill-opacity=".5">
+    <rect x="1208" y="166" width="28" height="8" rx="2"/>
+    <rect x="1208" y="192" width="28" height="8" rx="2"/>
+    <rect x="1208" y="218" width="28" height="8" rx="2"/>
+    <rect x="1208" y="244" width="28" height="8" rx="2"/>
+    <rect x="1208" y="436" width="28" height="8" rx="2"/>
+    <rect x="1208" y="462" width="28" height="8" rx="2"/>
+    <rect x="1208" y="488" width="28" height="8" rx="2"/>
+    <rect x="1224" y="582" width="14" height="6" rx="2"/>
+    <rect x="1224" y="606" width="14" height="6" rx="2"/>
+    <rect x="1224" y="630" width="14" height="6" rx="2"/>
+    <rect x="1224" y="654" width="14" height="6" rx="2"/>
+    <rect x="1224" y="678" width="14" height="6" rx="2"/>
+    <rect x="1224" y="702" width="14" height="6" rx="2"/>
+  </g>
+
+  <!-- 母线电容组 -->
+  <g stroke="#57d6ab" stroke-opacity=".38" stroke-width="2">
+    <circle cx="760" cy="654" r="34"/><circle cx="760" cy="654" r="25" stroke-dasharray="3 4"/>
+    <circle cx="854" cy="654" r="34"/><circle cx="854" cy="654" r="25" stroke-dasharray="3 4"/>
+    <circle cx="948" cy="654" r="34"/><circle cx="948" cy="654" r="25" stroke-dasharray="3 4"/>
+    <circle cx="1042" cy="654" r="34"/><circle cx="1042" cy="654" r="25" stroke-dasharray="3 4"/>
+    <path d="M760 620 V560 H700"/>
+    <path d="M854 620 V560 H902"/>
+    <path d="M948 620 V560 H996"/>
+    <path d="M1042 620 V560 H1090"/>
+    <path d="M760 688 V724 H910"/>
+    <path d="M854 688 V736 H910"/>
+    <path d="M948 688 V748 H910"/>
+    <path d="M1042 688 V760 H910"/>
+  </g>
+
+  <!-- 保险丝 -->
+  <g stroke="#e6bd6f" stroke-opacity=".55" stroke-width="2">
+    <rect x="720" y="510" width="54" height="18" rx="9"/>
+    <rect x="812" y="510" width="54" height="18" rx="9"/>
+    <rect x="904" y="510" width="54" height="18" rx="9"/>
+    <rect x="996" y="510" width="54" height="18" rx="9"/>
+  </g>
+
+  <!-- 较长的信号走线 -->
+  <g stroke="#57d6ab" stroke-opacity=".28" stroke-width="1.5" stroke-linejoin="round">
+    <path d="M620 450 H590 V540 H420 V600 H190"/>
+    <path d="M906 450 H934 V560 H1042 V600 H1270"/>
+    <path d="M620 260 H590 V156 H420 V120 H160"/>
+    <path d="M906 200 H944 V156 H1100 V120 H1270"/>
+    <path d="M500 560 V620 H380 V700 H190"/>
+    <path d="M1100 540 V610 H1170 V650 H1270"/>
+    <path d="M760 560 H720 V560"/>
+  </g>
+
+  <!-- 过孔阵列 -->
+  <g fill="#e6bd6f" fill-opacity=".5">
+    <circle cx="196" cy="588" r="4"/><circle cx="228" cy="588" r="4"/><circle cx="260" cy="588" r="4"/><circle cx="292" cy="588" r="4"/>
+    <circle cx="196" cy="612" r="4"/><circle cx="228" cy="612" r="4"/><circle cx="260" cy="612" r="4"/><circle cx="292" cy="612" r="4"/>
+    <circle cx="1168" cy="260" r="4"/><circle cx="1180" cy="292" r="4"/><circle cx="1168" cy="324" r="4"/><circle cx="1180" cy="356" r="4"/>
+    <circle cx="556" cy="700" r="4"/><circle cx="588" cy="700" r="4"/><circle cx="620" cy="700" r="4"/><circle cx="652" cy="700" r="4"/>
+    <circle cx="556" cy="724" r="4"/><circle cx="588" cy="724" r="4"/><circle cx="620" cy="724" r="4"/><circle cx="652" cy="724" r="4"/>
+  </g>
+
+  <!-- 丝印文字 -->
+  <g fill="#57d6ab" fill-opacity=".62" font-family="Consolas, 'Courier New', monospace" font-size="15" letter-spacing="1">
+    <text x="368" y="158">Q15-Q18</text>
+    <text x="366" y="246">Q11-Q14</text>
+    <text x="496" y="158">U1A  DRIVER</text>
+    <text x="496" y="246">U1B  DRIVER</text>
+    <text x="496" y="338">U1C  DRIVER</text>
+    <text x="496" y="430">U1D  DRIVER</text>
+    <text x="638" y="300" font-size="24" fill-opacity=".5">U1</text>
+    <text x="638" y="326" font-size="13">MAIN CONTROLLER</text>
+    <text x="1002" y="212">SAMPLING</text>
+    <text x="1002" y="344">OC PROTECT</text>
+    <text x="1002" y="476">PWM LOCK</text>
+    <text x="744" y="572">F4</text><text x="836" y="572">F5</text><text x="928" y="572">F6</text><text x="1020" y="572">F7</text>
+    <text x="744" y="716">C23</text><text x="838" y="716">C24</text><text x="932" y="716">C25</text><text x="1026" y="716">C26</text>
+    <text x="1184" y="138">J2</text><text x="1184" y="780">J3</text>
+    <text x="116" y="96">H1</text><text x="1318" y="96">H2</text><text x="116" y="930">H3</text><text x="1318" y="930">H4</text>
+  </g>
+
+  <!-- 网络名 -->
+  <g fill="#6aa8ff" fill-opacity=".55" font-family="Consolas, 'Courier New', monospace" font-size="17" letter-spacing="2">
+    <text x="110" y="760">BUS+</text>
+    <text x="110" y="794">BUS+</text>
+    <text x="110" y="828">PGND</text>
+    <text x="110" y="862">PGND</text>
+    <text x="690" y="948">4CH-120AV16  ·  PCBA</text>
+    <text x="1090" y="948">GYE-DSPZB</text>
+  </g>
+
+  <!-- 大号板名水印 -->
+  <text x="690" y="890" fill="#57d6ab" fill-opacity=".07" font-family="Arial Black, Arial, sans-serif" font-size="150" font-weight="900" letter-spacing="10">CFBC</text>
+
+  <!-- 边角定位十字 -->
+  <g stroke="#57d6ab" stroke-opacity=".3" stroke-width="1.5">
+    <path d="M74 160 H110 M92 142 V178"/>
+    <path d="M1290 160 H1326 M1308 142 V178"/>
+    <path d="M74 840 H110 M92 822 V858"/>
+    <path d="M1290 840 H1326 M1308 822 V858"/>
+  </g>
+</svg>

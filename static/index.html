@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#083d88" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#04172e" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="CFBC-CF-01 故障记录：Line、维修物品、故障原因。">
+  <title>CFBC-CF-01 · 故障记录</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css?v=12">
+</head>
+<body>
+  <a class="skip-link" href="#record-form">跳到填写表单</a>
+
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-copy">
+          <h1>CFBC-CF-01</h1>
+          <p class="brand-subtitle">故障记录</p>
+        </div>
+      </div>
+      <div class="header-side">
+        <div class="live-pill">
+          <span class="live-dot" id="live-dot"></span>
+          <span id="live-text">在线</span>
+        </div>
+        <div class="header-clock">
+          <strong id="header-time">--:--:--</strong>
+          <span id="header-date">----</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-stripe" aria-hidden="true"></div>
+  </header>
+
+  <main class="app-main">
+    <section class="panel form-panel" aria-labelledby="form-title">
+      <div class="form-panel-inner">
+        <div class="panel-heading">
+          <div>
+            <h2 id="form-title">故障记录</h2>
+          </div>
+          <p class="panel-aside"><span class="req">*</span> 必填</p>
+        </div>
+
+        <div id="form-alert" class="form-alert" role="alert" hidden></div>
+
+        <form id="record-form" novalidate autocomplete="off">
+          <fieldset class="form-section" id="line-fieldset">
+            <legend class="sr-only">Line</legend>
+            <div class="section-head">
+              <span class="section-index">01</span>
+              <span class="section-copy">
+                <span class="section-title">Line</span>
+              </span>
+              <span class="section-state" id="line-state">未选择</span>
+            </div>
+            <div class="choice-grid choice-lines">
+              <label class="choice line-choice">
+                <input type="radio" name="line" value="L1" required>
+                <span class="choice-key">L1</span>
+                <span class="choice-check" aria-hidden="true"></span>
+              </label>
+              <label class="choice line-choice">
+                <input type="radio" name="line" value="L2" required>
+                <span class="choice-key">L2</span>
+                <span class="choice-check" aria-hidden="true"></span>
+              </label>
+              <label class="choice line-choice">
+                <input type="radio" name="line" value="L3" required>
+                <span class="choice-key">L3</span>
+                <span class="choice-check" aria-hidden="true"></span>
+              </label>
+              <label class="choice line-choice">
+                <input type="radio" name="line" value="L4" required>
+                <span class="choice-key">L4</span>
+                <span class="choice-check" aria-hidden="true"></span>
+              </label>
+              <label class="choice line-choice">
+                <input type="radio" name="line" value="L5" required>
+                <span class="choice-key">L5</span>
+                <span class="choice-check" aria-hidden="true"></span>
+              </label>
+              <label class="choice line-choice">
+                <input type="radio" name="line" value="L6" required>
+                <span class="choice-key">L6</span>
+                <span class="choice-check" aria-hidden="true"></span>
+              </label>
+            </div>
+            <p class="field-error" id="line-error" hidden>请选择一条 Line</p>
+          </fieldset>
+
+          <fieldset class="form-section" id="item-fieldset">
+            <legend class="sr-only">维修物品</legend>
+            <div class="section-head">
+              <span class="section-index">02</span>
+                <span class="section-copy">
+                <span class="section-title">维修物品</span>
+              </span>
+              <button type="button" class="text-btn" id="item-add-btn">其他</button>
+              <span class="section-state" id="item-state">未选择</span>
+            </div>
+            <div class="item-add" id="item-add" hidden>
+              <input id="item-add-input" type="text" maxlength="24" placeholder="分类名称" autocomplete="off">
+              <button type="button" class="btn btn-small" id="item-add-save">添加</button>
+            </div>
+            <div class="choice-grid choice-items" id="item-grid">
+              <label class="choice item-choice">
+                <input type="radio" name="item" value="功率板" required>
+                <span class="item-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="5" width="24" height="22" rx="3"/>
+                    <path d="M9 10h6v5H9zM20 10h3M20 14h3M9 21h14M9 25h9"/>
+                    <path d="M4 10H1M4 16H1M4 22H1M28 10h3M28 16h3M28 22h3"/>
+                  </svg>
+                </span>
+                <span class="item-copy">
+                  <span class="item-name">功率板</span>
+                </span>
+                <span class="choice-check" aria-hidden="true"></span>
+              </label>
+              <label class="choice item-choice">
+                <input type="radio" name="item" value="ACDC" required>
+                <span class="item-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="6" width="24" height="20" rx="3"/>
+                    <path d="M8 16c1.7-3 3.3-3 5 0s3.3 3 5 0 3.3-3 5 0"/>
+                    <path d="M10 11h3M10 21h3"/>
+                  </svg>
+                </span>
+                <span class="item-copy">
+                  <span class="item-name">ACDC</span>
+                </span>
+                <span class="choice-check" aria-hidden="true"></span>
+              </label>
+              <label class="choice item-choice">
+                <input type="radio" name="item" value="DCDC" required>
+                <span class="item-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="6" width="24" height="20" rx="3"/>
+                    <path d="M9 12h8v8H9z"/>
+                    <path d="M21 12h4M23 10l2 2-2 2M25 20h-4M23 18l-2 2 2 2"/>
+                  </svg>
+                </span>
+                <span class="item-copy">
+                  <span class="item-name">DCDC</span>
+                </span>
+                <span class="choice-check" aria-hidden="true"></span>
+              </label>
+              <label class="choice item-choice">
+                <input type="radio" name="item" value="中位机" required>
+                <span class="item-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="8" width="22" height="16" rx="3"/>
+                    <rect x="11" y="13" width="10" height="6" rx="1.5"/>
+                    <path d="M9 4v4M16 4v4M23 4v4M9 24v4M16 24v4M23 24v4"/>
+                    <circle cx="9" cy="17" r="1" fill="currentColor"/>
+                    <circle cx="23" cy="17" r="1" fill="currentColor"/>
+                  </svg>
+                </span>
+                <span class="item-copy">
+                  <span class="item-name">中位机</span>
+                </span>
+                <span class="choice-check" aria-hidden="true"></span>
+              </label>
+            </div>
+            <p class="field-error" id="item-error" hidden>请选择维修物品</p>
+          </fieldset>
+
+          <div class="form-section" id="reason-section">
+            <div class="section-head static">
+              <span class="section-index">03</span>
+              <span class="section-copy">
+                <span class="section-title">故障原因</span>
+              </span>
+            </div>
+            <div class="textarea-wrap">
+              <textarea id="fault-reason" name="fault_reason" rows="5" maxlength="1000"
+                placeholder="现象、查到什么、怎么处理" aria-describedby="reason-hint"></textarea>
+              <div class="textarea-foot">
+                <span id="reason-hint">写具体一点，后面汇总直接用</span>
+                <span id="char-count">0 / 1000</span>
+              </div>
+            </div>
+            <p class="field-error" id="reason-error" hidden>请填写故障原因</p>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="submit-btn">
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                  <path d="M17 21v-8H7v8M7 3v5h8"/>
+                </svg>
+              </span>
+              <span id="submit-text">保存记录</span>
+              <span class="btn-kbd" aria-hidden="true">Ctrl ↵</span>
+            </button>
+            <button type="button" class="btn btn-ghost" id="reset-btn">
+              <span aria-hidden="true">↺</span> 清空
+            </button>
+          </div>
+          <p class="privacy-note">
+            <span class="privacy-dot" aria-hidden="true"></span>
+            记在这台服务器上，当天归档。
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <aside class="side-column" aria-label="记录概览与归档">
+      <section class="panel overview-panel" aria-labelledby="overview-title">
+        <div class="overview-head">
+          <div>
+            <h2 id="overview-title">今日记录</h2>
+            <p class="overview-date" id="overview-date">--</p>
+            <div class="overview-tools">
+              <button type="button" class="btn btn-small" id="history-open">以前的记录</button>
+              <button type="button" class="btn btn-small btn-quiet" id="history-today" hidden>回到今天</button>
+            </div>
+          </div>
+          <div class="count-ring" id="count-ring" style="--ring: 0deg">
+            <div class="count-ring-inner">
+              <strong id="total-count">0</strong>
+              <span>条</span>
+            </div>
+          </div>
+        </div>
+
+        <figure class="stat-chart-wrap">
+          <figcaption>近 14 天</figcaption>
+          <div class="stat-chart" id="stat-chart" role="group" aria-label="近 14 天记录条数"></div>
+        </figure>
+
+        <div class="distribution">
+          <div class="dist-block">
+            <div class="dist-title"><span>按 Line</span><span id="line-total">0</span></div>
+            <div class="bar-list" id="line-bars"></div>
+          </div>
+          <div class="dist-block">
+            <div class="dist-title"><span>按维修物品</span><span id="item-total">0</span></div>
+            <div class="bar-list" id="item-bars"></div>
+          </div>
+        </div>
+
+        <div class="records-head">
+          <h3>最近记录 <span class="records-count" id="records-count">0</span></h3>
+          <div class="records-tools">
+            <span class="updated-at" id="updated-at">--</span>
+            <button type="button" class="icon-btn" id="refresh-btn" title="刷新" aria-label="刷新记录">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <ol class="record-list" id="record-list"></ol>
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="12" y="8" width="40" height="48" rx="5"/>
+              <path d="M22 22h20M22 30h20M22 38h12"/>
+              <circle cx="42" cy="48" r="8"/>
+              <path d="M42 44v8M38 48h8"/>
+            </svg>
+          </div>
+          <p>还没有记录</p>
+          <span>左边填完就会出现在这里</span>
+        </div>
+      </section>
+
+      <section class="panel summary-panel" aria-labelledby="summary-title">
+        <div class="overview-head">
+          <div>
+            <h2 id="summary-title">每日汇总</h2>
+            <p class="overview-date">18:15 自动出，18:20 前能用</p>
+          </div>
+          <span class="summary-badge" id="summary-badge">18:20 前</span>
+        </div>
+        <div class="summary-box" id="summary-box" hidden>
+          <pre class="summary-text" id="summary-text"></pre>
+          <p class="summary-meta" id="summary-meta"></p>
+        </div>
+        <div class="summary-empty" id="summary-empty">
+          还没汇总。有记录就可以点「立即汇总」。
+        </div>
+        <div class="summary-actions">
+          <button type="button" class="btn btn-small" id="summary-generate">立即汇总</button>
+          <button type="button" class="btn btn-small btn-quiet" id="summary-copy" disabled>复制汇总</button>
+        </div>
+      </section>
+
+      <section class="panel archive-panel" aria-labelledby="archive-title">
+        <div class="archive-head">
+          <div>
+            <h2 id="archive-title">归档</h2>
+          </div>
+          <span class="archive-badge">自动</span>
+        </div>
+        <p class="archive-desc">零点生成当天的 Markdown 和 CSV，日报直接取。</p>
+
+        <div class="date-control">
+          <label for="date-picker">查看日期</label>
+          <div class="date-row">
+            <input type="date" id="date-picker" aria-label="选择要查看的日期">
+            <button type="button" class="btn btn-small" id="date-load">查看</button>
+            <button type="button" class="btn btn-small btn-quiet" id="date-today">今天</button>
+          </div>
+        </div>
+
+        <div class="archive-actions">
+          <a class="archive-link" id="download-csv" href="#" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/>
+            </svg>
+            CSV
+          </a>
+          <a class="archive-link" id="download-md" href="#" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>
+            </svg>
+            Markdown
+          </a>
+          <button type="button" class="archive-link" id="copy-digest">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>
+            </svg>
+            复制摘要
+          </button>
+        </div>
+        <p class="archive-note">最近数据：<span id="last-archive">—</span></p>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-mark" aria-hidden="true">C</span>
+        <span>CFBC-CF-01</span>
+      </div>
+      <div class="footer-meta">
+        <span>本机保存</span>
+        <span class="footer-dot" aria-hidden="true"></span>
+        <span>每天归档</span>
+        <span class="footer-dot" aria-hidden="true"></span>
+        <span id="footer-clock">--:--:--</span>
+      </div>
+    </div>
+  </footer>
+
+  <dialog class="edit-dialog" id="edit-dialog" aria-labelledby="edit-title">
+    <form class="edit-form" id="edit-form" novalidate>
+      <div class="edit-head">
+        <div>
+          <h3 id="edit-title">修改记录</h3>
+        </div>
+        <button type="button" class="icon-btn" id="edit-close" title="关闭" aria-label="关闭">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M6 6l12 12M18 6L6 18"/>
+          </svg>
+        </button>
+      </div>
+      <p class="edit-meta" id="edit-meta">—</p>
+
+      <div class="edit-field">
+        <span class="edit-label">Line <span class="req">*</span></span>
+        <div class="choice-grid choice-lines">
+          <label class="choice line-choice">
+            <input type="radio" name="edit-line" value="L1">
+            <span class="choice-key">L1</span>            <span class="choice-check" aria-hidden="true"></span>
+          </label>
+          <label class="choice line-choice">
+            <input type="radio" name="edit-line" value="L2">
+            <span class="choice-key">L2</span>            <span class="choice-check" aria-hidden="true"></span>
+          </label>
+          <label class="choice line-choice">
+            <input type="radio" name="edit-line" value="L3">
+            <span class="choice-key">L3</span>            <span class="choice-check" aria-hidden="true"></span>
+          </label>
+          <label class="choice line-choice">
+            <input type="radio" name="edit-line" value="L4">
+            <span class="choice-key">L4</span>            <span class="choice-check" aria-hidden="true"></span>
+          </label>
+          <label class="choice line-choice">
+            <input type="radio" name="edit-line" value="L5">
+            <span class="choice-key">L5</span>            <span class="choice-check" aria-hidden="true"></span>
+          </label>
+          <label class="choice line-choice">
+            <input type="radio" name="edit-line" value="L6">
+            <span class="choice-key">L6</span>            <span class="choice-check" aria-hidden="true"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="edit-field">
+        <span class="edit-label">维修物品 <span class="req">*</span></span>
+        <div class="choice-grid edit-items" id="edit-item-grid"></div>
+      </div>
+
+      <div class="edit-field">
+        <label class="edit-label" for="edit-reason">故障原因 <span class="req">*</span></label>
+        <div class="edit-reason-wrap">
+          <textarea id="edit-reason" rows="4" maxlength="1000" placeholder="故障原因"></textarea>
+        </div>
+      </div>
+
+      <p class="edit-error" id="edit-error" hidden></p>
+
+      <div class="edit-actions">
+        <button type="button" class="btn btn-ghost" id="edit-cancel">取消</button>
+        <button type="submit" class="btn btn-primary" id="edit-save">保存修改</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="edit-dialog qty-dialog" id="qty-dialog" aria-labelledby="qty-title">
+    <form class="edit-form" id="qty-form">
+      <div class="edit-head">
+        <div>
+          <h3 id="qty-title">选择数量</h3>
+          <p class="edit-meta" id="qty-item-name">—</p>
+        </div>
+        <button type="button" class="icon-btn" id="qty-close" title="关闭" aria-label="关闭">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M6 6l12 12M18 6L6 18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="qty-row">
+        <div class="qty-presets" id="qty-presets"></div>
+        <input id="qty-custom" type="text" inputmode="numeric" maxlength="3" placeholder="自定义" autocomplete="off" aria-label="自定义数量">
+        <button type="submit" class="btn btn-small" id="qty-save">确定</button>
+      </div>
+      <p class="edit-error" id="qty-error" hidden></p>
+    </form>
+  </dialog>
+
+  <dialog class="edit-dialog history-dialog" id="history-dialog" aria-labelledby="history-title">
+    <div class="edit-form">
+      <div class="edit-head">
+        <div>
+          <h3 id="history-title">以前的记录</h3>
+        </div>
+        <button type="button" class="icon-btn" id="history-close" title="关闭" aria-label="关闭">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M6 6l12 12M18 6L6 18"/>
+          </svg>
+        </button>
+      </div>
+      <p class="edit-meta">点某一天，右侧切到那天的记录和统计。</p>
+      <div class="history-list" id="history-list"></div>
+      <p class="history-empty" id="history-empty" hidden>还没有记录。</p>
+    </div>
+  </dialog>
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="/static/app.js?v=3"></script>
+</body>
+</html>
