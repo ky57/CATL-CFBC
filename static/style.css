@@ -761,6 +761,11 @@ svg {
   font-size: 20px;
 }
 
+.edit-actions[hidden],
+.pos-actions[hidden] {
+  display: none !important;
+}
+
 .qty-dialog {
   width: min(460px, calc(100vw - 28px));
 }

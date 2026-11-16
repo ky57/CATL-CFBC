@@ -231,21 +231,18 @@
   function formatLocation(location) {
     if (!location) return '';
     if (location === 'A面' || location === 'B面') return location;
-    const parts = String(location).split('-');
-    if (parts.length === 3) return parts.join(' · ');
+    const parts = String(location).split('-').filter(Boolean);
+    if (parts.length >= 2) return parts.join(' · ');
     return location;
   }
 
-  function parseLocation(location, itemName) {
-    if (isStackerItem(itemName)) {
-      const parts = String(location || '').split('-');
-      return {
-        line: parts[0] || '',
-        side: parts[1] || '',
-        temp: parts[2] || '',
-      };
-    }
-    return { line: '', side: location || '', temp: '' };
+  function parseLocation(location) {
+    const parts = String(location || '').split('-');
+    return {
+      line: parts[0] && /^L[1-6]$/.test(parts[0]) ? parts[0] : '',
+      side: parts[1] || '',
+      temp: parts[2] || '',
+    };
   }
 
   function itemChoice(name, inputName, selected) {
@@ -645,7 +642,7 @@
     if (els.editLocationMeta) {
       els.editLocationMeta.textContent = state.editLocation
         ? `位置：${formatLocation(state.editLocation)}`
-        : '位置未选（点维修类型重新选）';
+        : '位置未选（点维修物品重新选）';
     }
     els.editError.hidden = true;
     els.editError.textContent = '';
@@ -667,7 +664,7 @@
 
     if (!item || !line || !state.editQty || !reason) {
       showEditError(
-        !item ? '请选择维修类型' : !line ? '请选择位置' : !state.editQty ? '请选择数量' : '请填写故障原因'
+        !item ? '请选择维修物品' : !line ? '请选择位置' : !state.editQty ? '请选择数量' : '请填写故障原因'
       );
       return;
     }
@@ -839,7 +836,7 @@
     ['item', 'reason'].forEach(clearFieldError);
 
     if (!item) {
-      showFieldError('item', '请选择维修类型');
+      showFieldError('item', '请选择维修物品');
       valid = false;
     } else if (!line) {
       showFieldError('item', '请选择位置');
@@ -917,9 +914,6 @@
     els.posBody.querySelectorAll('[data-pos-temp]').forEach((button) => {
       button.classList.toggle('is-selected', button.dataset.posTemp === state.posTemp);
     });
-    els.posBody.querySelectorAll('[data-pos-board]').forEach((button) => {
-      button.classList.toggle('is-selected', button.dataset.posBoard === state.posSide);
-    });
   }
 
   function buildPosChip(label, datasetKey, datasetValue) {
@@ -931,86 +925,99 @@
     return button;
   }
 
+  function appendLineBlock(onPick) {
+    const lineBlock = document.createElement('div');
+    lineBlock.className = 'pos-block';
+    const lineTitle = document.createElement('div');
+    lineTitle.className = 'pos-label';
+    lineTitle.textContent = '先选拉线 L1–L6';
+    const lineRow = document.createElement('div');
+    lineRow.className = 'pos-row pos-lines';
+    state.lines.forEach((line) => {
+      const chip = buildPosChip(line, 'posLine', line);
+      chip.addEventListener('click', () => {
+        state.posLine = line;
+        paintPosDraft();
+        els.posError.hidden = true;
+        if (onPick) onPick(line);
+      });
+      lineRow.append(chip);
+    });
+    lineBlock.append(lineTitle, lineRow);
+    els.posBody.append(lineBlock);
+    return lineBlock;
+  }
+
+  function appendSideBlock(onPick) {
+    const sideBlock = document.createElement('div');
+    sideBlock.className = 'pos-block';
+    sideBlock.dataset.posSideBlock = '1';
+    const sideTitle = document.createElement('div');
+    sideTitle.className = 'pos-label';
+    sideTitle.textContent = '再选 A / B 面';
+    const sideRow = document.createElement('div');
+    sideRow.className = 'pos-row pos-board';
+    state.sides.forEach((side) => {
+      const chip = buildPosChip(side, 'posSide', side);
+      chip.addEventListener('click', () => {
+        state.posSide = side;
+        paintPosDraft();
+        els.posError.hidden = true;
+        if (onPick) onPick(side);
+      });
+      sideRow.append(chip);
+    });
+    sideBlock.append(sideTitle, sideRow);
+    els.posBody.append(sideBlock);
+    return sideBlock;
+  }
+
+  function appendTempBlock() {
+    const tempBlock = document.createElement('div');
+    tempBlock.className = 'pos-block';
+    const tempTitle = document.createElement('div');
+    tempTitle.className = 'pos-label';
+    tempTitle.textContent = '温区';
+    const tempRow = document.createElement('div');
+    tempRow.className = 'pos-row';
+    state.temps.forEach((temp) => {
+      const chip = buildPosChip(temp, 'posTemp', temp);
+      chip.addEventListener('click', () => {
+        state.posTemp = temp;
+        paintPosDraft();
+        els.posError.hidden = true;
+      });
+      tempRow.append(chip);
+    });
+    tempBlock.append(tempTitle, tempRow);
+    els.posBody.append(tempBlock);
+    return tempBlock;
+  }
+
+  function ensureBoardSideStep() {
+    if (els.posBody.querySelector('[data-pos-side-block]')) return;
+    appendSideBlock(() => applyPos());
+    paintPosDraft();
+  }
+
   function renderPosBody(itemName) {
     els.posBody.replaceChildren();
     els.posError.hidden = true;
     if (isStackerItem(itemName)) {
       els.posActions.hidden = false;
-      const lineBlock = document.createElement('div');
-      lineBlock.className = 'pos-block';
-      const lineTitle = document.createElement('div');
-      lineTitle.className = 'pos-label';
-      lineTitle.textContent = '拉线 L1–L6';
-      const lineRow = document.createElement('div');
-      lineRow.className = 'pos-row pos-lines';
-      state.lines.forEach((line) => {
-        const chip = buildPosChip(line, 'posLine', line);
-        chip.addEventListener('click', () => {
-          state.posLine = line;
-          paintPosDraft();
-          els.posError.hidden = true;
-        });
-        lineRow.append(chip);
-      });
-      lineBlock.append(lineTitle, lineRow);
-
-      const sideBlock = document.createElement('div');
-      sideBlock.className = 'pos-block';
-      const sideTitle = document.createElement('div');
-      sideTitle.className = 'pos-label';
-      sideTitle.textContent = 'A / B 面';
-      const sideRow = document.createElement('div');
-      sideRow.className = 'pos-row';
-      state.sides.forEach((side) => {
-        const chip = buildPosChip(side, 'posSide', side);
-        chip.addEventListener('click', () => {
-          state.posSide = side;
-          paintPosDraft();
-          els.posError.hidden = true;
-        });
-        sideRow.append(chip);
-      });
-      sideBlock.append(sideTitle, sideRow);
-
-      const tempBlock = document.createElement('div');
-      tempBlock.className = 'pos-block';
-      const tempTitle = document.createElement('div');
-      tempTitle.className = 'pos-label';
-      tempTitle.textContent = '温区';
-      const tempRow = document.createElement('div');
-      tempRow.className = 'pos-row';
-      state.temps.forEach((temp) => {
-        const chip = buildPosChip(temp, 'posTemp', temp);
-        chip.addEventListener('click', () => {
-          state.posTemp = temp;
-          paintPosDraft();
-          els.posError.hidden = true;
-        });
-        tempRow.append(chip);
-      });
-      tempBlock.append(tempTitle, tempRow);
-
-      els.posBody.append(lineBlock, sideBlock, tempBlock);
+      appendLineBlock();
+      appendSideBlock();
+      appendTempBlock();
     } else {
+      // 板件：先选 L1–L6，选完后才出现 A/B 面
       els.posActions.hidden = true;
-      const boardBlock = document.createElement('div');
-      boardBlock.className = 'pos-block';
-      const boardTitle = document.createElement('div');
-      boardTitle.className = 'pos-label';
-      boardTitle.textContent = '只选 A面 / B面';
-      const boardRow = document.createElement('div');
-      boardRow.className = 'pos-row pos-board';
-      state.sides.forEach((side) => {
-        const chip = buildPosChip(side, 'posBoard', side);
-        chip.addEventListener('click', () => {
-          state.posSide = side;
-          paintPosDraft();
-          applyPos(side);
-        });
-        boardRow.append(chip);
+      appendLineBlock(() => {
+        state.posSide = '';
+        ensureBoardSideStep();
+        const stale = els.posBody.querySelectorAll('[data-pos-side]');
+        stale.forEach((button) => button.classList.remove('is-selected'));
       });
-      boardBlock.append(boardTitle, boardRow);
-      els.posBody.append(boardBlock);
+      if (state.posLine) ensureBoardSideStep();
     }
     paintPosDraft();
   }
@@ -1024,7 +1031,7 @@
         ? state.editLocation
         : '')
       : (selectedValue('item') === name ? state.location : '');
-    const parsed = parseLocation(current, name);
+    const parsed = parseLocation(current);
     state.posLine = parsed.line;
     state.posSide = parsed.side;
     state.posTemp = parsed.temp;
@@ -1032,7 +1039,7 @@
     if (!els.posDialog.open) els.posDialog.showModal();
   }
 
-  function applyPos(boardSide) {
+  function applyPos() {
     const name = state.posItem;
     let location = '';
     if (isStackerItem(name)) {
@@ -1042,11 +1049,11 @@
       }
       location = `${state.posLine}-${state.posSide}-${state.posTemp}`;
     } else {
-      location = boardSide || state.posSide;
-      if (!location || !state.sides.includes(location)) {
-        showPosError('请选择 A面 或 B面');
+      if (!state.posLine || !state.posSide) {
+        showPosError('请先选拉线，再选 A面 / B面');
         return;
       }
+      location = `${state.posLine}-${state.posSide}`;
     }
 
     if (state.posMode === 'edit') {

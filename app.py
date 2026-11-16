@@ -39,7 +39,7 @@ SIDES = ["A面", "B面"]
 TEMPS = ["高温", "常温"]
 STACKER_ITEM = "堆垛机维修"
 DEFAULT_ITEMS = [STACKER_ITEM, "功率板", "ACDC", "DCDC", "中位机"]
-# 统计柱：堆垛机按 L1–L6 归并，板件按 A面/B面
+# 统计柱统一按 L1–L6 归并（兼容旧数据里单独的 A面/B面）
 STAT_LOCATIONS = LINES + SIDES
 MAX_ITEM_LEN = 24
 MAX_REASON = 1000
@@ -48,6 +48,9 @@ SUMMARY_DEADLINE_HOUR = 18
 SUMMARY_DEADLINE_MINUTE = 15
 STACKER_LOCATION_RE = re.compile(
     r"^(L[1-6])-(A面|B面)-(高温|常温)$"
+)
+BOARD_LOCATION_RE = re.compile(
+    r"^(L[1-6])-(A面|B面)$"
 )
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -197,9 +200,9 @@ def is_stacker_item(item: str) -> bool:
 
 
 def location_bucket(line: str) -> str:
-    """统计归并键：L1-A面-高温 → L1；A面 → A面。"""
+    """统计归并键：L1-A面-高温 / L1-A面 → L1；旧数据 A面 → A面。"""
     text = clean_text(line)
-    match = STACKER_LOCATION_RE.fullmatch(text)
+    match = STACKER_LOCATION_RE.fullmatch(text) or BOARD_LOCATION_RE.fullmatch(text)
     if match:
         return match.group(1)
     if text in SIDES:
@@ -215,8 +218,8 @@ def normalize_location(value: object, item: str) -> str:
         if not STACKER_LOCATION_RE.fullmatch(text):
             raise ValueError("请选择堆垛机位置（拉线 + A/B面 + 高温/常温）")
         return text
-    if text not in SIDES:
-        raise ValueError("请选择位置（A面 / B面）")
+    if not BOARD_LOCATION_RE.fullmatch(text):
+        raise ValueError("请选择位置（拉线 + A/B面）")
     return text
 
 

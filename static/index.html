@@ -6,10 +6,10 @@
   <meta name="theme-color" content="#083d88" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#04172e" media="(prefers-color-scheme: dark)">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="CATL-Notes 故障记录：干什么、位置、数量、故障原因。">
+  <meta name="description" content="CATL-Notes 故障记录：维修物品、位置、数量、故障原因。">
   <title>CATL-Notes · 故障记录</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/static/style.css?v=14">
+  <link rel="stylesheet" href="/static/style.css?v=16">
 </head>
 <body>
   <a class="skip-link" href="#record-form">跳到填写表单</a>
@@ -50,11 +50,11 @@
 
         <form id="record-form" novalidate autocomplete="off">
           <fieldset class="form-section" id="item-fieldset">
-            <legend class="sr-only">干什么</legend>
+            <legend class="sr-only">维修物品</legend>
             <div class="section-head">
               <span class="section-index">01</span>
               <span class="section-copy">
-                <span class="section-title">干什么</span>
+                <span class="section-title">维修物品</span>
               </span>
               <button type="button" class="text-btn" id="item-add-btn">其他</button>
               <span class="section-state" id="item-state">未选择</span>
@@ -64,7 +64,7 @@
               <button type="button" class="btn btn-small" id="item-add-save">添加</button>
             </div>
             <div class="choice-grid choice-items" id="item-grid"></div>
-            <p class="field-error" id="item-error" hidden>请选择维修类型</p>
+            <p class="field-error" id="item-error" hidden>请选择维修物品</p>
           </fieldset>
 
           <div class="form-section" id="reason-section">
@@ -138,7 +138,7 @@
             <div class="bar-list" id="line-bars"></div>
           </div>
           <div class="dist-block">
-            <div class="dist-title"><span>按维修类型</span><span id="item-total">0</span></div>
+            <div class="dist-title"><span>按维修物品</span><span id="item-total">0</span></div>
             <div class="bar-list" id="item-bars"></div>
           </div>
         </div>
@@ -260,7 +260,7 @@
       <p class="edit-meta" id="edit-location-meta">位置未选</p>
 
       <div class="edit-field">
-        <span class="edit-label">干什么 <span class="req">*</span></span>
+        <span class="edit-label">维修物品 <span class="req">*</span></span>
         <div class="choice-grid edit-items" id="edit-item-grid"></div>
       </div>
 
@@ -343,6 +343,6 @@
 
   <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="/static/app.js?v=5"></script>
+  <script src="/static/app.js?v=6"></script>
 </body>
 </html>
