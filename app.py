@@ -35,12 +35,20 @@ APP_CODE = "CATL-CFBC"
 VERSION = "1.0.0"
 
 LINES = ["L1", "L2", "L3", "L4", "L5", "L6"]
-DEFAULT_ITEMS = ["功率板", "ACDC", "DCDC", "中位机"]
+SIDES = ["A面", "B面"]
+TEMPS = ["高温", "常温"]
+STACKER_ITEM = "堆垛机维修"
+DEFAULT_ITEMS = [STACKER_ITEM, "功率板", "ACDC", "DCDC", "中位机"]
+# 统计柱：堆垛机按 L1–L6 归并，板件按 A面/B面
+STAT_LOCATIONS = LINES + SIDES
 MAX_ITEM_LEN = 24
 MAX_REASON = 1000
 MAX_BODY = 64 * 1024
 SUMMARY_DEADLINE_HOUR = 18
 SUMMARY_DEADLINE_MINUTE = 15
+STACKER_LOCATION_RE = re.compile(
+    r"^(L[1-6])-(A面|B面)-(高温|常温)$"
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 HOME_DIR = Path(os.environ.get("CFBC_HOME", str(BASE_DIR))).resolve()
@@ -137,19 +145,32 @@ def init_db() -> None:
             """
         )
         existing = conn.execute("SELECT COUNT(*) AS n FROM item_catalog").fetchone()["n"]
+        now = iso_time()
         if existing == 0:
-            now = iso_time()
             conn.executemany(
                 "INSERT INTO item_catalog(name, sort, created_at) VALUES(?, ?, ?)",
                 [(name, index, now) for index, name in enumerate(DEFAULT_ITEMS, start=1)],
             )
+        else:
+            # 旧库补齐「堆垛机维修」，排到最前
+            found = conn.execute(
+                "SELECT name FROM item_catalog WHERE name = ?", (STACKER_ITEM,)
+            ).fetchone()
+            if found is None:
+                conn.execute(
+                    "UPDATE item_catalog SET sort = sort + 1"
+                )
+                conn.execute(
+                    "INSERT INTO item_catalog(name, sort, created_at) VALUES(?, ?, ?)",
+                    (STACKER_ITEM, 1, now),
+                )
         columns = {row[1] for row in conn.execute("PRAGMA table_info(records)")}
         if "qty" not in columns:
             conn.execute(
                 "ALTER TABLE records ADD COLUMN qty INTEGER NOT NULL DEFAULT 1"
             )
         conn.execute(
-            "INSERT OR REPLACE INTO meta(key, value) VALUES('schema_version', '4')"
+            "INSERT OR REPLACE INTO meta(key, value) VALUES('schema_version', '5')"
         )
         conn.commit()
     finally:
@@ -164,7 +185,39 @@ def clean_text(value: object) -> str:
 
 
 def normalize_line(value: object) -> str:
-    return clean_text(value).upper()
+    """保留位置字符串原样（可含中文「面/温」）；纯 L1–L6 仍转大写。"""
+    text = clean_text(value)
+    if re.fullmatch(r"[Ll][1-6]", text):
+        return text.upper()
+    return text
+
+
+def is_stacker_item(item: str) -> bool:
+    return item == STACKER_ITEM
+
+
+def location_bucket(line: str) -> str:
+    """统计归并键：L1-A面-高温 → L1；A面 → A面。"""
+    text = clean_text(line)
+    match = STACKER_LOCATION_RE.fullmatch(text)
+    if match:
+        return match.group(1)
+    if text in SIDES:
+        return text
+    if text in LINES:
+        return text
+    return text
+
+
+def normalize_location(value: object, item: str) -> str:
+    text = normalize_line(value)
+    if is_stacker_item(item):
+        if not STACKER_LOCATION_RE.fullmatch(text):
+            raise ValueError("请选择堆垛机位置（拉线 + A/B面 + 高温/常温）")
+        return text
+    if text not in SIDES:
+        raise ValueError("请选择位置（A面 / B面）")
+    return text
 
 
 def normalize_item(value: object) -> str:
@@ -179,6 +232,9 @@ def normalize_item(value: object) -> str:
         "DC-DC": "DCDC",
         "DC/DC": "DCDC",
         "中位机": "中位机",
+        "堆垛机": STACKER_ITEM,
+        "堆垛机维修": STACKER_ITEM,
+        "STACKER": STACKER_ITEM,
     }
     if upper in ("ACDC", "DCDC"):
         return upper
@@ -196,13 +252,11 @@ def normalize_qty(value: object) -> int:
 
 
 def validate_record_fields(payload: dict) -> tuple[str, str, str, int]:
-    line = normalize_line(payload.get("line"))
     item = normalize_item(payload.get("item"))
     reason = clean_text(payload.get("fault_reason"))
-    if line not in LINES:
-        raise ValueError("请选择拉线（L1–L6）")
     if not item or item not in list_items():
         raise ValueError("请选择维修物品")
+    line = normalize_location(payload.get("line"), item)
     if not reason:
         raise ValueError("请填写故障原因")
     if len(reason) > MAX_REASON:
@@ -312,13 +366,14 @@ def fetch_stats(work_date: str) -> dict:
         total = conn.execute(
             "SELECT COUNT(*) AS n FROM records WHERE work_date = ?", (work_date,)
         ).fetchone()["n"]
-        by_line = {key: 0 for key in LINES}
+        by_line = {key: 0 for key in STAT_LOCATIONS}
         for row in conn.execute(
             "SELECT line, COUNT(*) AS n FROM records "
             "WHERE work_date = ? GROUP BY line",
             (work_date,),
         ):
-            by_line[row["line"]] = row["n"]
+            bucket = location_bucket(row["line"])
+            by_line[bucket] = by_line.get(bucket, 0) + row["n"]
         catalog = [
             row["name"]
             for row in conn.execute(
@@ -416,7 +471,7 @@ def build_summary_text(work_date: str, stats: dict, records: list[dict]) -> str:
         f"{key}×{value}" for key, value in stats["by_item"].items() if value
     )
     if line_part:
-        lines.append(f"拉线：{line_part}")
+                lines.append(f"位置：{line_part}")
     if item_part:
         lines.append(f"物品：{item_part}")
     lines.append(f"明细（{stats['total']} 条）：")
@@ -705,8 +760,10 @@ def generate_daily_archive(work_date: str) -> dict:
             "",
             "| 维度 | 分布 |",
             "| --- | --- |",
-            "| 拉线 | "
-            + " · ".join(f"{key} {stats['by_line'].get(key, 0)}" for key in LINES)
+            "| 位置 | "
+            + " · ".join(
+                f"{key} {stats['by_line'].get(key, 0)}" for key in STAT_LOCATIONS
+            )
             + " |",
             "| 维修物品 | "
             + " · ".join(
@@ -720,7 +777,7 @@ def generate_daily_archive(work_date: str) -> dict:
         if records:
             md_lines.extend(
                 [
-                    "| # | 时间 | 拉线 | 维修物品 | 数量 | 故障原因 |",
+                    "| # | 时间 | 位置 | 维修物品 | 数量 | 故障原因 |",
                     "| ---: | --- | --- | --- | ---: | --- |",
                 ]
             )
@@ -772,7 +829,7 @@ def generate_daily_archive(work_date: str) -> dict:
 
         buffer = io.StringIO()
         writer = csv.writer(buffer, lineterminator="\r\n")
-        writer.writerow(["序号", "记录时间", "拉线", "维修物品", "数量", "故障原因"])
+        writer.writerow(["序号", "记录时间", "位置", "维修物品", "数量", "故障原因"])
         for index, record in enumerate(reversed(records), start=1):
             writer.writerow(
                 [
@@ -1170,6 +1227,10 @@ class CFBCHandler(BaseHTTPRequestHandler):
                 "today": today_str(),
                 "server_time": iso_time(),
                 "lines": LINES,
+                "sides": SIDES,
+                "temps": TEMPS,
+                "stacker_item": STACKER_ITEM,
+                "stat_locations": STAT_LOCATIONS,
                 "items": list_items(),
                 "date": work_date,
                 "stats": stats,
