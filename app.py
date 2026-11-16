@@ -32,7 +32,7 @@ from urllib.parse import parse_qs, unquote, urlsplit
 
 APP_NAME = "CATL-CFBC 故障信息收集系统"
 APP_CODE = "CATL-CFBC"
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 LINES = ["L1", "L2", "L3", "L4", "L5", "L6"]
 SIDES = ["A面", "B面"]
