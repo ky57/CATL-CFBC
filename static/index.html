@@ -6,10 +6,10 @@
   <meta name="theme-color" content="#083d88" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#04172e" media="(prefers-color-scheme: dark)">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="CATL-Notes 故障记录：Line、维修物品、故障原因。">
+  <meta name="description" content="CATL-Notes 故障记录：干什么、位置、数量、故障原因。">
   <title>CATL-Notes · 故障记录</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/static/style.css?v=13">
+  <link rel="stylesheet" href="/static/style.css?v=14">
 </head>
 <body>
   <a class="skip-link" href="#record-form">跳到填写表单</a>
@@ -49,56 +49,12 @@
         <div id="form-alert" class="form-alert" role="alert" hidden></div>
 
         <form id="record-form" novalidate autocomplete="off">
-          <fieldset class="form-section" id="line-fieldset">
-            <legend class="sr-only">Line</legend>
+          <fieldset class="form-section" id="item-fieldset">
+            <legend class="sr-only">干什么</legend>
             <div class="section-head">
               <span class="section-index">01</span>
               <span class="section-copy">
-                <span class="section-title">Line</span>
-              </span>
-              <span class="section-state" id="line-state">未选择</span>
-            </div>
-            <div class="choice-grid choice-lines">
-              <label class="choice line-choice">
-                <input type="radio" name="line" value="L1" required>
-                <span class="choice-key">L1</span>
-                <span class="choice-check" aria-hidden="true"></span>
-              </label>
-              <label class="choice line-choice">
-                <input type="radio" name="line" value="L2" required>
-                <span class="choice-key">L2</span>
-                <span class="choice-check" aria-hidden="true"></span>
-              </label>
-              <label class="choice line-choice">
-                <input type="radio" name="line" value="L3" required>
-                <span class="choice-key">L3</span>
-                <span class="choice-check" aria-hidden="true"></span>
-              </label>
-              <label class="choice line-choice">
-                <input type="radio" name="line" value="L4" required>
-                <span class="choice-key">L4</span>
-                <span class="choice-check" aria-hidden="true"></span>
-              </label>
-              <label class="choice line-choice">
-                <input type="radio" name="line" value="L5" required>
-                <span class="choice-key">L5</span>
-                <span class="choice-check" aria-hidden="true"></span>
-              </label>
-              <label class="choice line-choice">
-                <input type="radio" name="line" value="L6" required>
-                <span class="choice-key">L6</span>
-                <span class="choice-check" aria-hidden="true"></span>
-              </label>
-            </div>
-            <p class="field-error" id="line-error" hidden>请选择一条 Line</p>
-          </fieldset>
-
-          <fieldset class="form-section" id="item-fieldset">
-            <legend class="sr-only">维修物品</legend>
-            <div class="section-head">
-              <span class="section-index">02</span>
-                <span class="section-copy">
-                <span class="section-title">维修物品</span>
+                <span class="section-title">干什么</span>
               </span>
               <button type="button" class="text-btn" id="item-add-btn">其他</button>
               <span class="section-state" id="item-state">未选择</span>
@@ -107,72 +63,13 @@
               <input id="item-add-input" type="text" maxlength="24" placeholder="分类名称" autocomplete="off">
               <button type="button" class="btn btn-small" id="item-add-save">添加</button>
             </div>
-            <div class="choice-grid choice-items" id="item-grid">
-              <label class="choice item-choice">
-                <input type="radio" name="item" value="功率板" required>
-                <span class="item-icon" aria-hidden="true">
-                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="4" y="5" width="24" height="22" rx="3"/>
-                    <path d="M9 10h6v5H9zM20 10h3M20 14h3M9 21h14M9 25h9"/>
-                    <path d="M4 10H1M4 16H1M4 22H1M28 10h3M28 16h3M28 22h3"/>
-                  </svg>
-                </span>
-                <span class="item-copy">
-                  <span class="item-name">功率板</span>
-                </span>
-                <span class="choice-check" aria-hidden="true"></span>
-              </label>
-              <label class="choice item-choice">
-                <input type="radio" name="item" value="ACDC" required>
-                <span class="item-icon" aria-hidden="true">
-                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="4" y="6" width="24" height="20" rx="3"/>
-                    <path d="M8 16c1.7-3 3.3-3 5 0s3.3 3 5 0 3.3-3 5 0"/>
-                    <path d="M10 11h3M10 21h3"/>
-                  </svg>
-                </span>
-                <span class="item-copy">
-                  <span class="item-name">ACDC</span>
-                </span>
-                <span class="choice-check" aria-hidden="true"></span>
-              </label>
-              <label class="choice item-choice">
-                <input type="radio" name="item" value="DCDC" required>
-                <span class="item-icon" aria-hidden="true">
-                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="4" y="6" width="24" height="20" rx="3"/>
-                    <path d="M9 12h8v8H9z"/>
-                    <path d="M21 12h4M23 10l2 2-2 2M25 20h-4M23 18l-2 2 2 2"/>
-                  </svg>
-                </span>
-                <span class="item-copy">
-                  <span class="item-name">DCDC</span>
-                </span>
-                <span class="choice-check" aria-hidden="true"></span>
-              </label>
-              <label class="choice item-choice">
-                <input type="radio" name="item" value="中位机" required>
-                <span class="item-icon" aria-hidden="true">
-                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="5" y="8" width="22" height="16" rx="3"/>
-                    <rect x="11" y="13" width="10" height="6" rx="1.5"/>
-                    <path d="M9 4v4M16 4v4M23 4v4M9 24v4M16 24v4M23 24v4"/>
-                    <circle cx="9" cy="17" r="1" fill="currentColor"/>
-                    <circle cx="23" cy="17" r="1" fill="currentColor"/>
-                  </svg>
-                </span>
-                <span class="item-copy">
-                  <span class="item-name">中位机</span>
-                </span>
-                <span class="choice-check" aria-hidden="true"></span>
-              </label>
-            </div>
-            <p class="field-error" id="item-error" hidden>请选择维修物品</p>
+            <div class="choice-grid choice-items" id="item-grid"></div>
+            <p class="field-error" id="item-error" hidden>请选择维修类型</p>
           </fieldset>
 
           <div class="form-section" id="reason-section">
             <div class="section-head static">
-              <span class="section-index">03</span>
+              <span class="section-index">02</span>
               <span class="section-copy">
                 <span class="section-title">故障原因</span>
               </span>
@@ -237,11 +134,11 @@
 
         <div class="distribution">
           <div class="dist-block">
-            <div class="dist-title"><span>按 Line</span><span id="line-total">0</span></div>
+            <div class="dist-title"><span>按位置</span><span id="line-total">0</span></div>
             <div class="bar-list" id="line-bars"></div>
           </div>
           <div class="dist-block">
-            <div class="dist-title"><span>按维修物品</span><span id="item-total">0</span></div>
+            <div class="dist-title"><span>按维修类型</span><span id="item-total">0</span></div>
             <div class="bar-list" id="item-bars"></div>
           </div>
         </div>
@@ -360,39 +257,10 @@
         </button>
       </div>
       <p class="edit-meta" id="edit-meta">—</p>
+      <p class="edit-meta" id="edit-location-meta">位置未选</p>
 
       <div class="edit-field">
-        <span class="edit-label">Line <span class="req">*</span></span>
-        <div class="choice-grid choice-lines">
-          <label class="choice line-choice">
-            <input type="radio" name="edit-line" value="L1">
-            <span class="choice-key">L1</span>            <span class="choice-check" aria-hidden="true"></span>
-          </label>
-          <label class="choice line-choice">
-            <input type="radio" name="edit-line" value="L2">
-            <span class="choice-key">L2</span>            <span class="choice-check" aria-hidden="true"></span>
-          </label>
-          <label class="choice line-choice">
-            <input type="radio" name="edit-line" value="L3">
-            <span class="choice-key">L3</span>            <span class="choice-check" aria-hidden="true"></span>
-          </label>
-          <label class="choice line-choice">
-            <input type="radio" name="edit-line" value="L4">
-            <span class="choice-key">L4</span>            <span class="choice-check" aria-hidden="true"></span>
-          </label>
-          <label class="choice line-choice">
-            <input type="radio" name="edit-line" value="L5">
-            <span class="choice-key">L5</span>            <span class="choice-check" aria-hidden="true"></span>
-          </label>
-          <label class="choice line-choice">
-            <input type="radio" name="edit-line" value="L6">
-            <span class="choice-key">L6</span>            <span class="choice-check" aria-hidden="true"></span>
-          </label>
-        </div>
-      </div>
-
-      <div class="edit-field">
-        <span class="edit-label">维修物品 <span class="req">*</span></span>
+        <span class="edit-label">干什么 <span class="req">*</span></span>
         <div class="choice-grid edit-items" id="edit-item-grid"></div>
       </div>
 
@@ -408,6 +276,27 @@
       <div class="edit-actions">
         <button type="button" class="btn btn-ghost" id="edit-cancel">取消</button>
         <button type="submit" class="btn btn-primary" id="edit-save">保存修改</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="edit-dialog pos-dialog" id="pos-dialog" aria-labelledby="pos-title">
+    <form class="edit-form" id="pos-form">
+      <div class="edit-head">
+        <div>
+          <h3 id="pos-title">选择位置</h3>
+          <p class="edit-meta" id="pos-item-name">—</p>
+        </div>
+        <button type="button" class="icon-btn" id="pos-close" title="关闭" aria-label="关闭">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M6 6l12 12M18 6L6 18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="pos-body" id="pos-body"></div>
+      <p class="edit-error" id="pos-error" hidden></p>
+      <div class="edit-actions" id="pos-actions" hidden>
+        <button type="submit" class="btn btn-primary" id="pos-save">确定位置</button>
       </div>
     </form>
   </dialog>
@@ -454,6 +343,6 @@
 
   <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="/static/app.js?v=4"></script>
+  <script src="/static/app.js?v=5"></script>
 </body>
 </html>

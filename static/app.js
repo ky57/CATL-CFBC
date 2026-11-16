@@ -6,14 +6,25 @@
     today: '',
     date: '',
     lines: ['L1', 'L2', 'L3', 'L4', 'L5', 'L6'],
-    items: ['功率板', 'ACDC', 'DCDC', '中位机'],
+    sides: ['A面', 'B面'],
+    temps: ['高温', '常温'],
+    stackerItem: '堆垛机维修',
+    statLocations: ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'A面', 'B面'],
+    items: ['堆垛机维修', '功率板', 'ACDC', 'DCDC', '中位机'],
     stats: null,
     records: [],
     dates: [],
+    location: '',
+    editLocation: '',
     qty: 0,
     editQty: 1,
     qtyItem: '',
     qtyMode: 'form',
+    posItem: '',
+    posMode: 'form',
+    posLine: '',
+    posSide: '',
+    posTemp: '',
     summary: null,
     submitting: false,
     loading: false,
@@ -30,12 +41,9 @@
     submitText: $('submit-text'),
     resetBtn: $('reset-btn'),
     formAlert: $('form-alert'),
-    lineFieldset: $('line-fieldset'),
     itemFieldset: $('item-fieldset'),
-    lineError: $('line-error'),
     itemError: $('item-error'),
     reasonError: $('reason-error'),
-    lineState: $('line-state'),
     itemState: $('item-state'),
     itemGrid: $('item-grid'),
     itemAdd: $('item-add'),
@@ -43,6 +51,7 @@
     itemAddInput: $('item-add-input'),
     itemAddSave: $('item-add-save'),
     editItemGrid: $('edit-item-grid'),
+    editLocationMeta: $('edit-location-meta'),
     overviewTitle: $('overview-title'),
     overviewDate: $('overview-date'),
     totalCount: $('total-count'),
@@ -80,6 +89,14 @@
     historyEmpty: $('history-empty'),
     historyClose: $('history-close'),
     statChart: $('stat-chart'),
+    posDialog: $('pos-dialog'),
+    posForm: $('pos-form'),
+    posTitle: $('pos-title'),
+    posItemName: $('pos-item-name'),
+    posBody: $('pos-body'),
+    posError: $('pos-error'),
+    posActions: $('pos-actions'),
+    posClose: $('pos-close'),
     qtyDialog: $('qty-dialog'),
     qtyForm: $('qty-form'),
     qtyTitle: $('qty-title'),
@@ -199,12 +216,37 @@
   }
 
   const ITEM_MARK = {
+    '堆垛机维修': '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 26V12l10-6 10 6v14"/><path d="M12 26v-8h8v8"/><path d="M6 12h20M11 8.5l5 3 5-3"/></svg>',
     '功率板': '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="24" height="22" rx="3"/><path d="M9 10h6v5H9zM20 10h3M20 14h3M9 21h14M9 25h9"/><path d="M4 10H1M4 16H1M4 22H1M28 10h3M28 16h3M28 22h3"/></svg>',
     'ACDC': '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="24" height="20" rx="3"/><path d="M8 16c1.7-3 3.3-3 5 0s3.3 3 5 0 3.3-3 5 0"/><path d="M10 11h3M10 21h3"/></svg>',
     'DCDC': '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="24" height="20" rx="3"/><path d="M9 12h8v8H9z"/><path d="M21 12h4M23 10l2 2-2 2M25 20h-4M23 18l-2 2 2 2"/></svg>',
     '中位机': '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="22" height="16" rx="3"/><rect x="11" y="13" width="10" height="6" rx="1.5"/><path d="M9 4v4M16 4v4M23 4v4M9 24v4M16 24v4M23 24v4"/></svg>',
   };
   const ITEM_MARK_PLAIN = '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="6" width="20" height="20" rx="4"/><path d="M11 16h10M16 11v10"/></svg>';
+
+  function isStackerItem(name) {
+    return name === state.stackerItem;
+  }
+
+  function formatLocation(location) {
+    if (!location) return '';
+    if (location === 'A面' || location === 'B面') return location;
+    const parts = String(location).split('-');
+    if (parts.length === 3) return parts.join(' · ');
+    return location;
+  }
+
+  function parseLocation(location, itemName) {
+    if (isStackerItem(itemName)) {
+      const parts = String(location || '').split('-');
+      return {
+        line: parts[0] || '',
+        side: parts[1] || '',
+        temp: parts[2] || '',
+      };
+    }
+    return { line: '', side: location || '', temp: '' };
+  }
 
   function itemChoice(name, inputName, selected) {
     const label = document.createElement('label');
@@ -225,7 +267,14 @@
     title.className = 'item-name';
     title.textContent = name;
     copy.append(title);
+    const chosenLocation = inputName === 'item' ? state.location : state.editLocation;
     const chosenQty = inputName === 'item' ? state.qty : state.editQty;
+    if (name === selected && chosenLocation) {
+      const loc = document.createElement('span');
+      loc.className = 'item-qty';
+      loc.textContent = formatLocation(chosenLocation);
+      copy.append(loc);
+    }
     if (name === selected && chosenQty > 0) {
       const qty = document.createElement('span');
       qty.className = 'item-qty';
@@ -255,14 +304,17 @@
   }
 
   function updateSectionStates() {
-    const line = selectedValue('line');
     const item = selectedValue('item');
-    els.lineState.textContent = line || '未选择';
-    els.lineState.classList.toggle('is-set', Boolean(line));
-    els.itemState.textContent = item
-      ? (state.qty > 0 ? `${item} ×${state.qty}` : item)
-      : '未选择';
-    els.itemState.classList.toggle('is-set', Boolean(item));
+    if (!item) {
+      els.itemState.textContent = '未选择';
+      els.itemState.classList.remove('is-set');
+      return;
+    }
+    const bits = [item];
+    if (state.location) bits.push(formatLocation(state.location));
+    if (state.qty > 0) bits.push(`×${state.qty}`);
+    els.itemState.textContent = bits.join(' · ');
+    els.itemState.classList.add('is-set');
   }
 
   function syncCheckedClasses() {
@@ -273,10 +325,7 @@
   }
 
   function clearFieldError(field) {
-    if (field === 'line') {
-      els.lineFieldset.classList.remove('has-error');
-      els.lineError.hidden = true;
-    } else if (field === 'item') {
+    if (field === 'item') {
       els.itemFieldset.classList.remove('has-error');
       els.itemError.hidden = true;
     } else if (field === 'reason') {
@@ -287,11 +336,7 @@
   }
 
   function showFieldError(field, message) {
-    if (field === 'line') {
-      els.lineFieldset.classList.add('has-error');
-      els.lineError.textContent = message;
-      els.lineError.hidden = false;
-    } else if (field === 'item') {
+    if (field === 'item') {
       els.itemFieldset.classList.add('has-error');
       els.itemError.textContent = message;
       els.itemError.hidden = false;
@@ -344,7 +389,7 @@
     els.overviewDate.textContent =
       dateLabel(state.date);
 
-    setBarList(els.lineBars, state.lines, stats.by_line || {}, total);
+    setBarList(els.lineBars, state.statLocations, stats.by_line || {}, total);
     setBarList(els.itemBars, state.items, stats.by_item || {}, total, true);
 
     els.recordsCount.textContent = String(total);
@@ -485,7 +530,7 @@
 
       const line = document.createElement('span');
       line.className = 'line-badge';
-      line.textContent = record.line;
+      line.textContent = formatLocation(record.line) || record.line;
 
       const kind = document.createElement('span');
       kind.className = 'item-badge';
@@ -592,14 +637,16 @@
 
   function openEdit(record) {
     state.editingId = record.id;
-
-    els.editForm.querySelectorAll('input[name="edit-line"]').forEach((input) => {
-      input.checked = input.value === record.line;
-    });
+    state.editLocation = record.line || '';
     state.editQty = Number(record.qty) > 0 ? Number(record.qty) : 1;
     renderEditItems(record.item);
     els.editReason.value = record.fault_reason;
     els.editMeta.textContent = `${dateLabel(record.work_date)} · ${record.time} · 记录 #${record.id}`;
+    if (els.editLocationMeta) {
+      els.editLocationMeta.textContent = state.editLocation
+        ? `位置：${formatLocation(state.editLocation)}`
+        : '位置未选（点维修类型重新选）';
+    }
     els.editError.hidden = true;
     els.editError.textContent = '';
 
@@ -613,15 +660,14 @@
     const recordId = state.editingId;
     if (!recordId) return;
 
-    const lineInput = els.editForm.querySelector('input[name="edit-line"]:checked');
     const itemInput = els.editForm.querySelector('input[name="edit-item"]:checked');
-    const line = lineInput ? lineInput.value : '';
+    const line = state.editLocation;
     const item = itemInput ? itemInput.value : '';
     const reason = els.editReason.value.trim();
 
-    if (!line || !item || !state.editQty || !reason) {
+    if (!item || !line || !state.editQty || !reason) {
       showEditError(
-        !line ? '请选择 Line' : !item ? '请选择维修物品' : !state.editQty ? '请选择数量' : '请填写故障原因'
+        !item ? '请选择维修类型' : !line ? '请选择位置' : !state.editQty ? '请选择数量' : '请填写故障原因'
       );
       return;
     }
@@ -755,6 +801,10 @@
       state.today = data.today;
       state.date = data.date;
       state.lines = data.lines || state.lines;
+      state.sides = data.sides || state.sides;
+      state.temps = data.temps || state.temps;
+      state.stackerItem = data.stacker_item || state.stackerItem;
+      state.statLocations = data.stat_locations || state.statLocations;
       state.items = data.items || state.items;
       renderItemChoices();
       state.stats = data.stats;
@@ -781,19 +831,21 @@
     if (state.submitting) return;
     clearFormAlert();
 
-    const line = selectedValue('line');
+    const line = state.location;
     const item = selectedValue('item');
     const reason = els.reason.value.trim();
     let valid = true;
 
-    ['line', 'item', 'reason'].forEach(clearFieldError);
+    ['item', 'reason'].forEach(clearFieldError);
 
-    if (!line) {
-      showFieldError('line', '请选择一条 Line');
+    if (!item) {
+      showFieldError('item', '请选择维修类型');
       valid = false;
-    }
-    if (!item || !state.qty) {
-      showFieldError('item', item ? '请选择数量' : '请选择维修物品');
+    } else if (!line) {
+      showFieldError('item', '请选择位置');
+      valid = false;
+    } else if (!state.qty) {
+      showFieldError('item', '请选择数量');
       valid = false;
     }
     if (!reason) {
@@ -802,10 +854,9 @@
     }
 
     if (!valid) {
-      if (!line) {
-        els.form.querySelector('input[name="line"]').focus();
-      } else if (!item) {
-        els.form.querySelector('input[name="item"]').focus();
+      if (!item || !line || !state.qty) {
+        const first = els.form.querySelector('input[name="item"]');
+        if (first) first.focus();
       } else {
         els.reason.focus();
       }
@@ -830,7 +881,7 @@
       await loadDay(data.today, { silent: true });
       showToast(
         '记录已保存',
-        `${data.record.line} / ${data.record.item} ×${data.record.qty || state.qty} · 今日第 ${data.stats.total} 条`
+        `${formatLocation(data.record.line)} / ${data.record.item} ×${data.record.qty || state.qty} · 今日第 ${data.stats.total} 条`
       );
       els.reason.focus();
     } catch (error) {
@@ -843,8 +894,183 @@
     }
   }
 
+  function closePos() {
+    if (els.posDialog.open) els.posDialog.close();
+  }
+
   function closeQty() {
     if (els.qtyDialog.open) els.qtyDialog.close();
+  }
+
+  function showPosError(message) {
+    els.posError.textContent = message;
+    els.posError.hidden = false;
+  }
+
+  function paintPosDraft() {
+    els.posBody.querySelectorAll('[data-pos-line]').forEach((button) => {
+      button.classList.toggle('is-selected', button.dataset.posLine === state.posLine);
+    });
+    els.posBody.querySelectorAll('[data-pos-side]').forEach((button) => {
+      button.classList.toggle('is-selected', button.dataset.posSide === state.posSide);
+    });
+    els.posBody.querySelectorAll('[data-pos-temp]').forEach((button) => {
+      button.classList.toggle('is-selected', button.dataset.posTemp === state.posTemp);
+    });
+    els.posBody.querySelectorAll('[data-pos-board]').forEach((button) => {
+      button.classList.toggle('is-selected', button.dataset.posBoard === state.posSide);
+    });
+  }
+
+  function buildPosChip(label, datasetKey, datasetValue) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'pos-chip';
+    button.textContent = label;
+    button.dataset[datasetKey] = datasetValue;
+    return button;
+  }
+
+  function renderPosBody(itemName) {
+    els.posBody.replaceChildren();
+    els.posError.hidden = true;
+    if (isStackerItem(itemName)) {
+      els.posActions.hidden = false;
+      const lineBlock = document.createElement('div');
+      lineBlock.className = 'pos-block';
+      const lineTitle = document.createElement('div');
+      lineTitle.className = 'pos-label';
+      lineTitle.textContent = '拉线 L1–L6';
+      const lineRow = document.createElement('div');
+      lineRow.className = 'pos-row pos-lines';
+      state.lines.forEach((line) => {
+        const chip = buildPosChip(line, 'posLine', line);
+        chip.addEventListener('click', () => {
+          state.posLine = line;
+          paintPosDraft();
+          els.posError.hidden = true;
+        });
+        lineRow.append(chip);
+      });
+      lineBlock.append(lineTitle, lineRow);
+
+      const sideBlock = document.createElement('div');
+      sideBlock.className = 'pos-block';
+      const sideTitle = document.createElement('div');
+      sideTitle.className = 'pos-label';
+      sideTitle.textContent = 'A / B 面';
+      const sideRow = document.createElement('div');
+      sideRow.className = 'pos-row';
+      state.sides.forEach((side) => {
+        const chip = buildPosChip(side, 'posSide', side);
+        chip.addEventListener('click', () => {
+          state.posSide = side;
+          paintPosDraft();
+          els.posError.hidden = true;
+        });
+        sideRow.append(chip);
+      });
+      sideBlock.append(sideTitle, sideRow);
+
+      const tempBlock = document.createElement('div');
+      tempBlock.className = 'pos-block';
+      const tempTitle = document.createElement('div');
+      tempTitle.className = 'pos-label';
+      tempTitle.textContent = '温区';
+      const tempRow = document.createElement('div');
+      tempRow.className = 'pos-row';
+      state.temps.forEach((temp) => {
+        const chip = buildPosChip(temp, 'posTemp', temp);
+        chip.addEventListener('click', () => {
+          state.posTemp = temp;
+          paintPosDraft();
+          els.posError.hidden = true;
+        });
+        tempRow.append(chip);
+      });
+      tempBlock.append(tempTitle, tempRow);
+
+      els.posBody.append(lineBlock, sideBlock, tempBlock);
+    } else {
+      els.posActions.hidden = true;
+      const boardBlock = document.createElement('div');
+      boardBlock.className = 'pos-block';
+      const boardTitle = document.createElement('div');
+      boardTitle.className = 'pos-label';
+      boardTitle.textContent = '只选 A面 / B面';
+      const boardRow = document.createElement('div');
+      boardRow.className = 'pos-row pos-board';
+      state.sides.forEach((side) => {
+        const chip = buildPosChip(side, 'posBoard', side);
+        chip.addEventListener('click', () => {
+          state.posSide = side;
+          paintPosDraft();
+          applyPos(side);
+        });
+        boardRow.append(chip);
+      });
+      boardBlock.append(boardTitle, boardRow);
+      els.posBody.append(boardBlock);
+    }
+    paintPosDraft();
+  }
+
+  function openPos(name, mode) {
+    state.posItem = name;
+    state.posMode = mode;
+    els.posItemName.textContent = name;
+    const current = mode === 'edit'
+      ? (els.editForm.querySelector('input[name="edit-item"]:checked')?.value === name
+        ? state.editLocation
+        : '')
+      : (selectedValue('item') === name ? state.location : '');
+    const parsed = parseLocation(current, name);
+    state.posLine = parsed.line;
+    state.posSide = parsed.side;
+    state.posTemp = parsed.temp;
+    renderPosBody(name);
+    if (!els.posDialog.open) els.posDialog.showModal();
+  }
+
+  function applyPos(boardSide) {
+    const name = state.posItem;
+    let location = '';
+    if (isStackerItem(name)) {
+      if (!state.posLine || !state.posSide || !state.posTemp) {
+        showPosError('请选完：拉线 + A/B面 + 高温/常温');
+        return;
+      }
+      location = `${state.posLine}-${state.posSide}-${state.posTemp}`;
+    } else {
+      location = boardSide || state.posSide;
+      if (!location || !state.sides.includes(location)) {
+        showPosError('请选择 A面 或 B面');
+        return;
+      }
+    }
+
+    if (state.posMode === 'edit') {
+      state.editLocation = location;
+      const input = els.editForm.querySelector(
+        `input[name="edit-item"][value="${CSS.escape(name)}"]`
+      );
+      if (input) input.checked = true;
+      if (els.editLocationMeta) {
+        els.editLocationMeta.textContent = `位置：${formatLocation(location)}`;
+      }
+      renderEditItems(name);
+    } else {
+      state.location = location;
+      const input = els.form.querySelector(
+        `input[name="item"][value="${CSS.escape(name)}"]`
+      );
+      if (input) input.checked = true;
+      clearFieldError('item');
+      renderItemChoices();
+      syncCheckedClasses();
+    }
+    closePos();
+    openQty(name, state.posMode);
   }
 
   function paintQty(value) {
@@ -862,7 +1088,10 @@
   function openQty(name, mode) {
     state.qtyItem = name;
     state.qtyMode = mode;
-    els.qtyItemName.textContent = name;
+    const loc = mode === 'edit' ? state.editLocation : state.location;
+    els.qtyItemName.textContent = loc
+      ? `${name} · ${formatLocation(loc)}`
+      : name;
     const current = mode === 'edit'
       ? (els.editForm.querySelector('input[name="edit-item"]:checked')?.value === name ? state.editQty : 0)
       : (selectedValue('item') === name ? state.qty : 0);
@@ -906,27 +1135,29 @@
     closeQty();
   }
 
-  function bindItemQty(container, inputName, mode) {
+  function bindItemPick(container, inputName, mode) {
     container.addEventListener('click', (event) => {
       const label = event.target.closest('.item-choice');
       if (!label || !container.contains(label)) return;
       const input = label.querySelector(`input[name="${inputName}"]`);
       if (!input) return;
       event.preventDefault();
-      openQty(input.value, mode);
+      openPos(input.value, mode);
     });
   }
 
   function resetForm() {
     els.form.reset();
     state.qty = 0;
-    ['line', 'item', 'reason'].forEach(clearFieldError);
+    state.location = '';
+    ['item', 'reason'].forEach(clearFieldError);
     renderItemChoices();
     clearFormAlert();
     els.charCount.textContent = '0 / 1000';
     updateSectionStates();
     syncCheckedClasses();
-    els.form.querySelector('input[name="line"]').focus({ preventScroll: true });
+    const first = els.form.querySelector('input[name="item"]');
+    if (first) first.focus({ preventScroll: true });
   }
 
   // ------------------------------------------------------------------
@@ -992,14 +1223,6 @@
     els.form.addEventListener('submit', submitRecord);
     els.resetBtn.addEventListener('click', resetForm);
 
-    els.form.querySelectorAll('input[name="line"]').forEach((input) => {
-      input.addEventListener('change', () => {
-        clearFieldError('line');
-        updateSectionStates();
-        syncCheckedClasses();
-        clearFormAlert();
-      });
-    });
     for (let qty = 1; qty <= 5; qty += 1) {
       const button = document.createElement('button');
       button.type = 'button';
@@ -1008,8 +1231,16 @@
       button.addEventListener('click', () => applyQty(qty));
       els.qtyPresets.append(button);
     }
-    bindItemQty(els.itemFieldset, 'item', 'form');
-    bindItemQty(els.editItemGrid, 'edit-item', 'edit');
+    bindItemPick(els.itemFieldset, 'item', 'form');
+    bindItemPick(els.editItemGrid, 'edit-item', 'edit');
+    els.posForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      applyPos();
+    });
+    els.posClose.addEventListener('click', closePos);
+    els.posDialog.addEventListener('click', (event) => {
+      if (event.target === els.posDialog) closePos();
+    });
     els.qtyForm.addEventListener('submit', (event) => {
       event.preventDefault();
       applyQty(els.qtyCustom.value);
@@ -1050,11 +1281,10 @@
           body: JSON.stringify({ name }),
         });
         state.items = data.items;
+        state.location = '';
+        state.qty = 0;
         renderItemChoices();
-        const picked = els.form.querySelector(`input[name="item"][value="${CSS.escape(data.name)}"]`);
-        if (picked) picked.checked = true;
-        updateSectionStates();
-        syncCheckedClasses();
+        openPos(data.name, 'form');
         els.itemAddInput.value = '';
         els.itemAdd.hidden = true;
         showToast('已添加', data.name);

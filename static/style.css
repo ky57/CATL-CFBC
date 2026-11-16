@@ -693,6 +693,74 @@ svg {
   font-weight: 700;
 }
 
+.pos-dialog {
+  width: min(520px, calc(100vw - 28px));
+}
+
+.pos-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 6px;
+}
+
+.pos-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pos-label {
+  color: #6b7f97;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.pos-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pos-lines {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.pos-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pos-chip {
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid #cfdeef;
+  border-radius: 12px;
+  color: var(--blue-800);
+  background: #f4f9ff;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+
+.pos-chip:hover,
+.pos-chip.is-selected {
+  border-color: var(--blue-600);
+  color: #fff;
+  background: var(--blue-600);
+}
+
+.pos-board .pos-chip {
+  min-height: 64px;
+  font-size: 20px;
+}
+
 .qty-dialog {
   width: min(460px, calc(100vw - 28px));
 }
@@ -1354,16 +1422,19 @@ svg {
 
 .line-badge {
   display: inline-block;
+  max-width: 58%;
   min-width: 34px;
-  padding: 3px 6px;
+  padding: 3px 7px;
   border-radius: 6px;
   color: #fff;
   background: linear-gradient(145deg, #0b63cf, #083d88);
   font-family: var(--font-display);
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: .03em;
+  letter-spacing: .02em;
+  line-height: 1.35;
   text-align: center;
+  white-space: normal;
 }
 
 .item-badge {
@@ -1910,6 +1981,10 @@ svg {
   }
 
   .choice-lines {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pos-lines {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
@@ -2960,6 +3035,23 @@ svg {
 
   .item-qty {
     color: #8cc3ff;
+  }
+
+  .pos-label {
+    color: #8aa0b8;
+  }
+
+  .pos-chip {
+    border-color: #2c425e;
+    color: #d5e6ff;
+    background: #15243a;
+  }
+
+  .pos-chip:hover,
+  .pos-chip.is-selected {
+    border-color: #3d8ef0;
+    color: #fff;
+    background: #1d5fbf;
   }
 
   .qty-presets button {
