@@ -1,0 +1,64 @@
+name: Deploy static site to GitHub Pages
+
+# Publishes static/ only. The Python server (app.py) is not deployed.
+# Asset links in the app are absolute (/static/...) because app.py serves
+# them from the site root. Project Pages hosts this repo under /CATL-Notes/,
+# so the build strips that prefix in the published copies. /api/* calls are
+# left as-is; those screens still need the Python server.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Assemble site from static/
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          src = Path("static")
+          out = Path("_site")
+          text_suffixes = {".html", ".css", ".js", ".svg"}
+          for path in src.rglob("*"):
+              if not path.is_file():
+                  continue
+              target = out / path.relative_to(src)
+              target.parent.mkdir(parents=True, exist_ok=True)
+              data = path.read_bytes()
+              if path.suffix.lower() in text_suffixes:
+                  data = data.replace(b"/static/", b"")
+              target.write_bytes(data)
+          PY
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
